@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "137264618239",
+    "project_id": "merco-9e7c5",
+    "storage_bucket": "merco-9e7c5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:137264618239:android:2a5a60ff412490b113caca",
+        "android_client_info": {
+          "package_name": "com.Merco"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCB3rrX7c0_h5RqeHfnM0M6JWON1ivtwdE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
