@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
+    kotlin("plugin.serialization") version "1.9.10"
 }
 
 android {
@@ -52,6 +53,10 @@ android {
 
 dependencies {
 
+    implementation("io.coil-kt:coil-compose:2.2.2")
+    implementation( "androidx.navigation:navigation-compose:2.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("androidx.compose.runtime:runtime-livedata:1.6.8")
 
@@ -80,6 +85,9 @@ dependencies {
     implementation(libs.androidx.datastore.core.android)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.storage)
+    implementation(libs.firebase.crashlytics.buildtools)
+    implementation(libs.androidx.room.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
