@@ -1,6 +1,7 @@
 package com.example.merco.screens
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,12 +34,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.merco.domain.model.Seller
 import com.example.merco.domain.model.User
 import com.example.merco.viewmodel.ProfileViewModel
 import com.example.merco.viewmodel.SignupViewModel
 
 @Composable
-fun RegisterUserScreen(navController: NavController, signupViewModel: SignupViewModel = viewModel()
+fun RegisterSellerScreen(navController: NavController, signupViewModel: SignupViewModel = viewModel()
 ) {
 
     val authState by signupViewModel.authState.observeAsState()
@@ -48,6 +50,9 @@ fun RegisterUserScreen(navController: NavController, signupViewModel: SignupView
     var lastname by remember { mutableStateOf("") }
     var celphone by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var address by remember { mutableStateOf("") }
+    var city by remember { mutableStateOf("") }
+    var storename by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     var context = LocalContext.current
@@ -62,7 +67,7 @@ fun RegisterUserScreen(navController: NavController, signupViewModel: SignupView
             horizontalAlignment = Alignment.CenterHorizontally // Centramos horizontalmente
         ) {
             Text(
-                text = "Registrarse",
+                text = "Registrarse como vendedor",
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
@@ -87,6 +92,16 @@ fun RegisterUserScreen(navController: NavController, signupViewModel: SignupView
                     .padding(vertical = 8.dp)
             )
 
+            // Campo para el apellido
+            TextField(
+                value = storename,
+                onValueChange = { storename = it },
+                label = { Text("Nombre de la tienda") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            )
+
             // Campo para el número de celular
             TextField(
                 value = celphone,
@@ -102,18 +117,41 @@ fun RegisterUserScreen(navController: NavController, signupViewModel: SignupView
             TextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Email") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email), // Teclado de email
+                label = { Text("Correo") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
             )
 
+            // Campo para la dirección
+            TextField(
+                value = address,
+                onValueChange = { address = it },
+                label = { Text("Dirección del local") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            )
+
+            // Campo para la ciudad
+            TextField(
+                value = city,
+                onValueChange = { city = it },
+                label = { Text("Ciudad") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            )
+
+
             // Campo para la contraseña
             TextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Contraseña") },
+                label = { Text("Contraseña 6 digitos ") },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -128,33 +166,36 @@ fun RegisterUserScreen(navController: NavController, signupViewModel: SignupView
                 }
                 2 -> {
                     Text(
-                        text = "Hubo un error, que no podemos ver todavía",
+                        text = "Hubo un error, verifica los datos",
                         color = Color.Red,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                 }
                 3 -> {
                     LaunchedEffect(Unit) {
-                        navController.navigate("menuUser")
+                        navController.navigate("menuSeller")
                     }
                 }
             }
 
-            // Botón de registro
             Button(
                 onClick = {
-                    signupViewModel.signup(
-                        User("", name, lastname, celphone, email, role = "Customer"),
-                        password
-                    )
-
+                    if (name.isNotBlank() && lastname.isNotBlank() && celphone.isNotBlank() &&
+                        email.isNotBlank() && address.isNotBlank() && city.isNotBlank() && password.length >= 6
+                    ) {
+                        signupViewModel.signupseller(
+                            Seller("", name, lastname, celphone, email, address, city),
+                            password
+                        )
+                    } else {
+                        Toast.makeText(context, "Por favor completa todos los campos correctamente.", Toast.LENGTH_SHORT).show()
+                    }
                 },
-
                 modifier = Modifier
                     .padding(top = 24.dp)
                     .fillMaxWidth()
-                    .height(50.dp), // Ajustar tamaño del botón
-                shape = RoundedCornerShape(24.dp) // Esquinas redondeadas
+                    .height(50.dp),
+                shape = RoundedCornerShape(24.dp)
             ) {
                 Text(text = "Regístrate", color = Color.White)
             }
