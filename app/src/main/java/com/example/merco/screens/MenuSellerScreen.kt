@@ -91,7 +91,7 @@ fun MenuSellerScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Mi tienda",
+                        "Merco",
                         style = MaterialTheme.typography.headlineMedium,
                         color = Color.Black,
                         fontWeight = FontWeight.Bold
@@ -270,16 +270,18 @@ fun MenuSellerScreen(
                 DropdownMenuItem(
                     text = {
                         Text(
-                            "Ayuda",
+                            "Info",
                             color = Color.Black,
                             fontSize = 16.sp
                         )
                     },
-                    onClick = { expanded = false },
+                    onClick = { expanded = false
+                        navController.navigate("info")
+                              },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Info,
-                            contentDescription = "Ayuda",
+                            contentDescription = "Info",
                             tint = Color.Red
                         )
                     }

@@ -88,10 +88,9 @@ fun ProfileUserScreen(navController: NavController, profileViewModel: ProfileVie
                     modifier = Modifier
                         .size(120.dp)
                         .padding(vertical = 16.dp),
-                    tint = Color(0xFFE53935)
+                    tint = Color.Red
                 )
 
-                // Nombre de la tienda
                 Text(
                     text = "${userState?.name}",
                     style = MaterialTheme.typography.headlineMedium,
@@ -111,14 +110,12 @@ fun ProfileUserScreen(navController: NavController, profileViewModel: ProfileVie
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-
                     InfoField(
                         title = "Teléfono",
                         value = userState?.celphone ?: ""
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
-
 
                     InfoField(
                         title = "email",
@@ -142,7 +139,7 @@ fun ProfileUserScreen(navController: NavController, profileViewModel: ProfileVie
                             navController.navigate("login")
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFE53935)
+                            containerColor = Color.Red
                         ),
                         modifier = Modifier
                             .fillMaxWidth()

@@ -52,8 +52,6 @@ class ProductViewModel(
     }
 
 
-
-
     fun uploadImageAndAddProduct(categoryId: String, productDTO: ProductDTO, imageUri: Uri) {
         val updatedProduct = productDTO.copy(sellerId = _sellerId.value ?: "")
         Log.d("ProductViewModel", "Seller ID: ${_sellerId.value}")
@@ -128,5 +126,8 @@ class ProductViewModel(
             }
         }
     }
+
+
+
 
 }

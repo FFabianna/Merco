@@ -1,22 +1,38 @@
 package com.example.merco.screens
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,17 +44,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.merco.domain.model.Seller
 import com.example.merco.domain.model.User
 import com.example.merco.viewmodel.ProfileViewModel
 import com.example.merco.viewmodel.SignupViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterUserScreen(navController: NavController, signupViewModel: SignupViewModel = viewModel()
+fun RegisterUserScreen(
+    navController: NavController,
+    signupViewModel: SignupViewModel = viewModel()
 ) {
 
     val authState by signupViewModel.authState.observeAsState()
@@ -52,85 +74,133 @@ fun RegisterUserScreen(navController: NavController, signupViewModel: SignupView
 
     var context = LocalContext.current
 
-    Scaffold(modifier = Modifier.fillMaxSize()) { paddingValues ->
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .systemBarsPadding(),
+        topBar = {
+            TopAppBar(
+                title = { Text("") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBackIosNew,
+                            contentDescription = "Regresar"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White,
+                    navigationIconContentColor = Color.Black
+                ),
+                modifier = Modifier.statusBarsPadding()
+            )
+        },
+        containerColor = Color.White
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
-                .padding(16.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally // Centramos horizontalmente
+                .padding(horizontal = 24.dp)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.height(16.dp))
+
             Text(
-                text = "Registrarse",
+                text = "Registrarse como comprador",
                 style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(bottom = 24.dp)
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .padding(bottom = 32.dp)
+                    .align(Alignment.Start)
             )
 
-            // Campo para el nombre
-            TextField(
+            val textFieldColors = TextFieldDefaults.colors(
+                unfocusedContainerColor = Color.White,
+                focusedContainerColor = Color.White,
+                unfocusedIndicatorColor = Color(0xFFE0E0E0),
+                focusedIndicatorColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                focusedTextColor = Color.Black,
+                unfocusedLabelColor = Color(0xFF9E9E9E),
+                focusedLabelColor = Color.Black
+            )
+
+            OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
                 label = { Text("Nombre") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
+                    .padding(vertical = 8.dp),
+                colors = textFieldColors,
+                shape = RoundedCornerShape(12.dp)
             )
 
-            // Campo para el apellido
-            TextField(
+            OutlinedTextField(
                 value = lastname,
                 onValueChange = { lastname = it },
                 label = { Text("Apellido") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
+                    .padding(vertical = 8.dp),
+                colors = textFieldColors,
+                shape = RoundedCornerShape(12.dp)
             )
 
-            // Campo para el número de celular
-            TextField(
+
+            OutlinedTextField(
                 value = celphone,
                 onValueChange = { celphone = it },
                 label = { Text("Celular") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone), // Solo números
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
+                    .padding(vertical = 8.dp),
+                colors = textFieldColors,
+                shape = RoundedCornerShape(12.dp)
             )
 
-            // Campo para el correo electrónico
-            TextField(
+            OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Email") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email), // Teclado de email
+                label = { Text("Correo") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
+                    .padding(vertical = 8.dp),
+                colors = textFieldColors,
+                shape = RoundedCornerShape(12.dp)
             )
 
-            // Campo para la contraseña
-            TextField(
+            OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Contraseña") },
+                label = { Text("Contraseña 6 dígitos") },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
+                    .padding(vertical = 8.dp),
+                colors = textFieldColors,
+                shape = RoundedCornerShape(12.dp)
             )
-            Log.e("Autenticacion ",authState.toString())
 
-            // Estado de autenticación
             when (authState) {
                 1 -> {
-                    CircularProgressIndicator(modifier = Modifier.padding(bottom = 16.dp))
+                    CircularProgressIndicator(
+                        modifier = Modifier.padding(vertical = 16.dp),
+                        color = Color.Red
+                    )
                 }
                 2 -> {
                     Text(
-                        text = "Hubo un error, que no podemos ver todavía",
+                        text = "Hubo un error, verifica los datos",
                         color = Color.Red,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        modifier = Modifier.padding(vertical = 16.dp)
                     )
                 }
                 3 -> {
@@ -140,65 +210,46 @@ fun RegisterUserScreen(navController: NavController, signupViewModel: SignupView
                 }
             }
 
-            // Botón de registro
             Button(
                 onClick = {
-                    signupViewModel.signup(
-                        User("", name, lastname, celphone, email, role = "Customer"),
-                        password
-                    )
-
+                    if (name.isNotBlank() && lastname.isNotBlank() && celphone.isNotBlank() &&
+                        email.isNotBlank()  && password.length >= 6
+                    ) {
+                        signupViewModel.signup(
+                            User("", name, lastname, celphone, email),
+                            password
+                        )
+                    } else {
+                        Toast.makeText(context, "Por favor completa todos los campos correctamente.", Toast.LENGTH_SHORT).show()
+                    }
                 },
-
                 modifier = Modifier
-                    .padding(top = 24.dp)
+                    .padding(vertical = 24.dp)
                     .fillMaxWidth()
-                    .height(50.dp), // Ajustar tamaño del botón
-                shape = RoundedCornerShape(24.dp) // Esquinas redondeadas
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red, contentColor = Color.White),
+                shape = RoundedCornerShape(12.dp)
             ) {
-                Text(text = "Regístrate", color = Color.White)
+                Text(
+                    text = "Registrarse",
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
             }
 
-            // Opción para iniciar sesión si ya tiene cuenta
             TextButton(
                 onClick = { navController.navigate("login") },
-                modifier = Modifier.padding(top = 16.dp)
+                modifier = Modifier.padding(bottom = 32.dp)
             ) {
-                Text(text = "¿Ya tienes una cuenta?", color = Color.Black)
+                Text(
+                    text = "¿Ya tienes una cuenta?",
+                    color = Color.Black,
+                    fontSize = 14.sp
+                )
             }
 
-            // Sección para registrar con Google o Facebook
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 32.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text("O regístrate con una cuenta de:")
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                /*
-                IconButton(onClick = { /* Registro con Google */ }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_google),
-                        contentDescription = "Google",
-                        tint = Color.Unspecified // Para usar el color original
-                    )
-                }
-                IconButton(onClick = { /* Registro con Facebook */ }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_facebook),
-                        contentDescription = "Facebook",
-                        tint = Color.Unspecified
-                    )
-                }*/
-            }
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

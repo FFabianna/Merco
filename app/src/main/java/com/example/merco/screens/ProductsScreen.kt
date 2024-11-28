@@ -134,6 +134,9 @@ fun ProductsScreen(
                         .aspectRatio(0.8f)
                         .background(Color.White)
                         .clickable {
+                            val productJson = Uri.encode(Json.encodeToString(product))
+                            navController.navigate("productDetail/$productJson")
+
                         },
                     shape = RoundedCornerShape(8.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -212,7 +215,7 @@ fun ProductsScreen(
 
                     Button(
                         onClick = { navController.navigate("addProducts/${category.id}") },
-                        colors = ButtonDefaults.buttonColors(Color(0xFFE53935)),
+                        colors = ButtonDefaults.buttonColors(Color.Red),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 8.dp)

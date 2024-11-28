@@ -108,13 +108,11 @@ class ProductServicesImpl:ProductService {
                 .document(id)
                 .get()
                 .await()
-
             if (productSnapshot.exists()) {
                 Log.d("ProductServicesImpl", "Producto encontrado en categoría: ${category.id}")
                 return productSnapshot.toObject(Product::class.java)
             }
         }
-
         Log.w("ProductServicesImpl", "Producto no encontrado con ID: $id")
         return null
     }

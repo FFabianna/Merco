@@ -23,6 +23,7 @@ import com.example.merco.domain.model.Order
 import com.example.merco.domain.model.Product
 import com.example.merco.screens.AddCategoryScreen
 import com.example.merco.screens.AddProductScreen
+import com.example.merco.screens.InfoScreen
 import com.example.merco.screens.LoginScreen
 import com.example.merco.screens.MenuSellerScreen
 import com.example.merco.screens.MenuUserScreen
@@ -106,6 +107,7 @@ fun App() {
         composable("addCategory") { AddCategoryScreen(navController) }
         composable ("ordersUser"){ OrdersUserScreen(navController)}
         composable ("orderSeller"){ OrderSellerScreen(navController)}
+        composable ("info"){InfoScreen(navController)}
 
 
 
@@ -199,13 +201,24 @@ fun App() {
         }
 
         composable(
-            route = "productDetail/{productId}",
-            arguments = listOf(navArgument("productId") { type = NavType.StringType })
+            "productDetail/{product}",
+            arguments = listOf(navArgument("product") { type = NavType.StringType })
         ) { backStackEntry ->
-            val productId = backStackEntry.arguments?.getString("productId") ?: ""
-            ProductDetailScreen(navController, productId)
-        }
+            val productJson = backStackEntry.arguments?.getString("product")
+            if (productJson != null) {
+                val product = Json.decodeFromString<Product>(productJson)
+                val viewModel: ProductViewModel = viewModel()
 
+                ProductDetailScreen(
+                    product = product,
+                    navController = navController,
+                    productViewModel = viewModel
+
+                )
+            } else {
+                Log.e("Navigation", "Product JSON is null")
+            }
+        }
 
     }
 }
@@ -230,6 +243,12 @@ fun OrdersUserPreview(){
 @Composable
 fun OrderSellerPreview(){
     OrderSellerScreen(navController = rememberNavController())
+}
+
+@Preview(showBackground = true)
+@Composable
+fun InfoPreview(){
+    InfoScreen(navController = rememberNavController())
 }
 
 

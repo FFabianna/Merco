@@ -48,29 +48,30 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.draw.clip
 import coil.compose.ImagePainter
 import coil.compose.rememberAsyncImagePainter
+import com.example.merco.domain.model.Product
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetailScreen(
+    product: Product,
     navController: NavController,
-    productId: String,
     productViewModel: ProductViewModel = viewModel()
 ) {
-    LaunchedEffect(productId) {
-        productViewModel.loadProductById(productId)
+    LaunchedEffect(product.id) {
+        productViewModel.loadProductById(product.id)
     }
 
-    val product by productViewModel.product.observeAsState()
-    val isLoading by productViewModel.loading.observeAsState(initial = false)
-    val error by productViewModel.error.observeAsState()
+    //val product by productViewModel.product.observeAsState()
+    //val isLoading by productViewModel.loading.observeAsState(initial = false)
+    //val error by productViewModel.error.observeAsState()
 
     Scaffold(
         topBar = {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp)
+                    .height(90.dp)
                     .background(Color.White)
             ) {
                 IconButton(
@@ -88,134 +89,107 @@ fun ProductDetailScreen(
             }
         }
     ) { paddingValues ->
-        when {
-            isLoading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-            error != null -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "Error: $error", color = Color.Red)
-                }
-            }
-            product != null -> {
-                Column(
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
+
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .height(300.dp)
+
+            ) {
+                Image(
+                    painter = rememberAsyncImagePainter(product.imageId),
+                    contentDescription = "Imagen de ${product.name}",
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                        .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    val product = product
-
-                    val painter = rememberAsyncImagePainter(product?.imageId)
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(300.dp)
-                    ) {
-                        Image(
-                            painter = painter,
-                            contentDescription = "Imagen de ${product?.name}",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(160.dp)
-                                .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
-                            contentScale = ContentScale.Crop
-                        )
-                        Box(
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .size(50.dp)
-                                .background(
-                                    color = Color(0xFF4CAF50),
-                                    shape = CircleShape
-                                )
-                                .align(Alignment.TopEnd),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "${product?.discount}%",
-                                color = Color.White,
-                                style = MaterialTheme.typography.labelLarge,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-
-                    Text(
-                        text = product?.name ?: "",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(vertical = 16.dp)
-                    )
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Inventory,
-                            contentDescription = null,
-                            tint = Color(0xFF4CAF50)
-                        )
-                        Text(
-                            text = "Quedan ${product?.stock} unidades",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFF4CAF50),
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                    }
-                    Text(
-                        text = product?.reason ?: "",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    )
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Text(
-                            text = "$${product?.price}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray,
-                            textDecoration = TextDecoration.LineThrough
-                        )
-
-                        Text(
-                            text = "$${product?.newPrice}",
-                            style = MaterialTheme.typography.headlineMedium,
-                            color = Color.Black,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
-                    }
-                }
-            }
-            else -> {
+                        .fillMaxWidth()
+                        .height(250.dp)
+                        .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
+                    contentScale = ContentScale.Crop
+                )
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .size(50.dp)
+                        .background(
+                            color = Color(0xFF4CAF50),
+                            shape = CircleShape
+                        )
+                        .align(Alignment.TopEnd),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = "Producto no encontrado.")
+                    Text(
+                        text = "${product.discount}%",
+                        color = Color.White,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
+
             }
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = product.name ?: "",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Inventory,
+                    contentDescription = null,
+                    tint = Color(0xFF4CAF50)
+                )
+                Text(
+                    text = "Quedan ${product.stock} unidades",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color(0xFF4CAF50),
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = product.reason ?: "",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = "$${product.price}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray,
+                textDecoration = TextDecoration.LineThrough
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = "$${product.newPrice}",
+                style = MaterialTheme.typography.headlineMedium,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+
         }
     }
 }
+
 
 
 

@@ -187,9 +187,16 @@ fun OrdersUserScreen(
                                         color = Color.Gray,
                                         fontWeight = FontWeight.Light
                                     )
-                                    // Precio total con el signo de pesos
+
                                     Text(
                                         text = "$${"%.2f".format(order.totalPrice)}",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.Gray,
+                                        fontWeight = FontWeight.Light
+                                    )
+
+                                    Text(
+                                        text = "Estado :  ${order.status}",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = Color.Gray,
                                         fontWeight = FontWeight.Light

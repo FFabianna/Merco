@@ -10,6 +10,8 @@ import com.example.merco.domain.model.Order
 import com.example.merco.domain.model.Product
 import com.example.merco.repository.OrderRepository
 import com.example.merco.repository.OrderRepositoryImpl
+import com.example.merco.repository.ProductRepository
+import com.example.merco.repository.ProductRepositoryImpl
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
@@ -20,6 +22,8 @@ import kotlinx.coroutines.launch
 
 class OrderViewModel(
     private val repository: OrderRepository = OrderRepositoryImpl()
+
+
 
 ) : ViewModel() {
 
@@ -32,6 +36,11 @@ class OrderViewModel(
     val loading: LiveData<Boolean> = _loading
     private val _errorr = MutableLiveData<String?>()
     val errorr: LiveData<String?> = _errorr
+
+    private val repo: ProductRepository = ProductRepositoryImpl()
+
+
+
 
 
    
@@ -77,6 +86,7 @@ class OrderViewModel(
         viewModelScope.launch {
             try {
                 repository.createOrder(order)
+                repo.changeStock(product = Product(id = order.productId), quantity = order.quantity)
                 orderCreated.value = true
             } catch (e: Exception) {
                 error.value = e.message

@@ -134,6 +134,8 @@ fun ProductsUserScreen(
                         .aspectRatio(0.8f)
                         .background(Color.White)
                         .clickable {
+                            val productJson = Uri.encode(Json.encodeToString(product))
+                            navController.navigate("productDetailUser/$productJson")
                         },
                     shape = RoundedCornerShape(8.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)

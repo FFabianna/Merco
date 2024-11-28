@@ -76,7 +76,7 @@ fun ProfileSellerScreen(
                     modifier = Modifier
                         .size(120.dp)
                         .padding(vertical = 16.dp),
-                    tint = Color(0xFFE53935)
+                    tint = Color.Red
                 )
 
 
@@ -136,7 +136,7 @@ fun ProfileSellerScreen(
                             navController.navigate("login")
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFE53935)
+                            containerColor = Color.Red
                         ),
                         modifier = Modifier
                             .fillMaxWidth()

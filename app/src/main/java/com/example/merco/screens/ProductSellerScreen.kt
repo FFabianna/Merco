@@ -126,7 +126,10 @@ fun ProductSellerScreen(
                         .aspectRatio(0.8f)
                         .background(Color.White)
                         .clickable {
-                            navController.navigate("productDetail/${product.id}")
+                            val productJson = Uri.encode(Json.encodeToString(product))
+                            navController.navigate("productDetail/$productJson")
+
+                           // navController.navigate("productDetail/${product.id}")
                         },
 
                     shape = RoundedCornerShape(8.dp),

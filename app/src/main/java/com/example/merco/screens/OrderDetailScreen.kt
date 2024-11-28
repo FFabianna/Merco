@@ -247,26 +247,48 @@ fun OrderDetailScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Estado del pedido
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .background(Color(0xFFE8F5E9), shape = RoundedCornerShape(8.dp))
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Estado: ${order.status}. La tienda ya está informada del pedido.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF4CAF50),
-                    textAlign = TextAlign.Center
-                )
+            if (order.status == "Pendiente") {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .background(Color(0xFFE8F5E9), shape = RoundedCornerShape(8.dp))
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                        Text(
+                            text = "Estado: ${order.status}. La tienda ya está informada del pedido.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF4CAF50),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+
+            }else{
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .background(Color(0xFFE8F5E9), shape = RoundedCornerShape(8.dp))
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+
+                    Text(
+                        text = "El producto ha sido entregado con éxito.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray,
+                    )
+
+                }
+
             }
 
-            Spacer(modifier = Modifier.height(32.dp)) // Espacio inferior
-        }
-    }
 
+        }
+
+    }
 }

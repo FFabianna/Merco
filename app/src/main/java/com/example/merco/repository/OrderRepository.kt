@@ -7,6 +7,7 @@ import com.example.merco.domain.model.Order
 import com.example.merco.domain.model.Product
 import com.example.merco.service.OrderService
 import com.example.merco.service.OrderServicesImpl
+import com.example.merco.viewmodel.ProductViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -27,6 +28,7 @@ interface OrderRepository {
 class OrderRepositoryImpl(
     private val orderService: OrderService = OrderServicesImpl(),
     private val firestoree: FirebaseFirestore = Firebase.firestore,
+    private val repository: ProductRepository = ProductRepositoryImpl()
 
 
     ) : OrderRepository {
@@ -35,11 +37,9 @@ class OrderRepositoryImpl(
     override suspend fun changeStatus(order: Order) {
         try{
             Log.d("OrderRepository", "Changing status for order: $order")
-            // Cambiar el estado del pedido a "Entregado"
             if (order != null) {
                 order.status = "Entregado"
             }
-            // Guardar los cambios en el origen de datos (base de datos o servidor)
             if (order != null) {
                 firestore.collection("orders").document(order.id).set(order)
             }
@@ -50,14 +50,11 @@ class OrderRepositoryImpl(
 
 
     override suspend fun createOrder(order: Order) {
-
         try {
             val documentReference = Firebase.firestore
                 .collection("orders")
-                .document() // Esto crea un DocumentReference con un ID único, pero no escribe todavía.
-
-            val generatedId = documentReference.id // Obtienes el ID autogenerado
-
+                .document()
+            val generatedId = documentReference.id
             val orderData = mapOf(
                 "id" to generatedId,
                 "productId" to order.productId,
@@ -71,11 +68,11 @@ class OrderRepositoryImpl(
                 "productName" to order.productName,
                 "status" to order.status
             )
-
-            // Guarda el documento con el ID autogenerado y el campo `id` actualizado
             documentReference
                 .set(orderData)
                 .await()
+
+
 
         } catch (e: Exception) {
             throw e

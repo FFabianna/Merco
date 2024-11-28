@@ -5,6 +5,7 @@ import android.util.Log
 import com.example.merco.domain.model.Product
 import com.example.merco.domain.model.DTO.CategoryDTO
 import com.example.merco.domain.model.DTO.ProductDTO
+import com.example.merco.domain.model.Order
 import com.example.merco.service.CategoryService
 import com.example.merco.service.CategoryServicesImpl
 import com.example.merco.service.ProductService
@@ -30,14 +31,76 @@ interface ProductRepository {
 
     suspend fun getProductsBySeller(sellerId: String): List<Product>
 
+    suspend fun getById(productId: String): Product?
+    suspend fun changeStock(product: Product, quantity: Int)
+
 }
 
 class ProductRepositoryImpl(
     private val productService: ProductService = ProductServicesImpl(),
 
 
-
     ) : ProductRepository {
+/*
+    override suspend fun changeStock(product:Product, quantity: Int) {
+        try{
+            Log.d("ProductRepository", "Changing stock for product: $product")
+            if (product != null) {
+            }
+            if (product!= null) {
+                Firebase.firestore
+                    .collection("categories")
+                    .document()
+                    .collection("products")
+                    .document(product.stock).set(newStock)
+            }
+        } catch (e: Exception) {
+            throw e
+        }
+
+    }*/
+
+
+    override suspend fun changeStock(product: Product, quantity: Int) {
+        try {
+            val firestore = Firebase.firestore
+
+            val categoriesSnapshot = firestore.collection("categories").get().await()
+
+
+            for (category in categoriesSnapshot.documents) {
+
+                val productsSnapshot = category.reference.collection("products")
+                    .whereEqualTo("id", product.id)
+                    .get().await()
+
+                if (!productsSnapshot.isEmpty) {
+
+                    val productDoc = productsSnapshot.documents.first()
+                    val currentStock = productDoc.getLong("stock") ?: 0
+
+                    val newStock = currentStock - quantity
+                    if (newStock < 0) {
+                        throw Exception("Stock insuficiente para el producto con ID: ${product.id}")
+                    }
+
+                    productDoc.reference.update("stock", newStock).await()
+                    Log.d("ProductRepository", "Stock actualizado para el producto: ${product.id}")
+                    return
+                }
+            }
+
+            // Si no se encontró el producto en ninguna categoría
+            throw Exception("Producto no encontrado con ID: ${product.id}")
+        } catch (e: Exception) {
+            Log.e("ProductRepository", "Error al cambiar el stock: ${e.message}", e)
+            throw e
+        }
+    }
+
+
+
+
 
     override suspend fun addProduct(categoryId:String, updatedProduct:ProductDTO, image: Uri) {
         val uid = Firebase.auth.currentUser?.uid
@@ -66,43 +129,21 @@ class ProductRepositoryImpl(
         }
     }
 
-/*
-    override suspend fun getAllProducts(): List<Product> {
-        Log.d("ProductRepository", "Fetching all products")
+
+    override suspend fun getById(productId: String): Product? {
         return try {
-
-            val querySnapshot = Firebase.firestore
-                .collection("categories")
-                .get()
-                .await()
-
-            val storage = Firebase.storage
-            querySnapshot.documents.mapNotNull { document ->
-                val id = document.id
-                val name = document.getString("name") ?: "Sin nombre"
-
-                try {
-                    val imageUrl = storage.reference
-                        .child("productsImages/$id")
-                        .downloadUrl
-                        .await()
-                        .toString()
-
-
-                    Product(id = id, name = name, imageId = imageUrl)
-                } catch (e: Exception) {
-                    Log.e(
-                        "ProductRepository",
-                        "Error fetching image URL for product$id: ${e.message}"
-                    )
-                    null
-                }
+            val product= productService.getProductById(productId)
+            if (product == null) {
+                Log.w("ORDERRepositoryImpl", "No se encontró el ORDER con ID: $productId")
             }
+            product
         } catch (e: Exception) {
-            Log.e("ProductRepository", "Error fetching products: ${e.message}")
-            emptyList()
+            Log.e("ORDERRepositoryImpl", "Error al obtener el ORDER por ID: $productId", e)
+            null
         }
-    }*/
+    }
+
+
     override suspend fun getProductsByCategory(categoryId: String): List<Product> {
         Log.d("ProductRepository", "Fetching all products for category $categoryId")
 
