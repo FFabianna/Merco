@@ -19,12 +19,21 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.merco.domain.model.Category
+import com.example.merco.domain.model.Order
+import com.example.merco.domain.model.Product
 import com.example.merco.screens.AddCategoryScreen
 import com.example.merco.screens.AddProductScreen
 import com.example.merco.screens.LoginScreen
 import com.example.merco.screens.MenuSellerScreen
 import com.example.merco.screens.MenuUserScreen
+import com.example.merco.screens.OrderDetailScreen
+import com.example.merco.screens.OrderSellerScreen
+import com.example.merco.screens.OrdersUserScreen
+import com.example.merco.screens.ProductDetailScreen
+import com.example.merco.screens.ProductDetailUserScreen
+import com.example.merco.screens.ProductSellerScreen
 import com.example.merco.screens.ProductsScreen
+import com.example.merco.screens.ProductsUserScreen
 import com.example.merco.screens.ProfileUserScreen
 import com.example.merco.screens.ProfileSellerScreen
 import com.example.merco.screens.RegisterSellerScreen
@@ -32,13 +41,16 @@ import com.example.merco.screens.RegisterUserScreen
 import com.example.merco.screens.SelectTypeUserScreen
 
 import com.example.merco.ui.theme.MercoTheme
+import com.example.merco.viewmodel.OrderViewModel
 import com.example.merco.viewmodel.ProductViewModel
+import com.example.merco.viewmodel.ProfileViewModel
 //import com.example.merco.ui.theme.White
 import com.example.merco.viewmodel.SignupViewModel
 import kotlinx.serialization.json.Json
 
 
 class MainActivity : ComponentActivity() {
+
 
     private val signupViewModel: SignupViewModel by viewModels()
 
@@ -92,6 +104,9 @@ fun App() {
         composable("menuUser") { MenuUserScreen(navController) }
         composable("menuSeller") { MenuSellerScreen(navController) }
         composable("addCategory") { AddCategoryScreen(navController) }
+        composable ("ordersUser"){ OrdersUserScreen(navController)}
+        composable ("orderSeller"){ OrderSellerScreen(navController)}
+
 
 
         composable(
@@ -101,7 +116,7 @@ fun App() {
             val categoryJson = backStackEntry.arguments?.getString("category")
             if (categoryJson != null) {
                 val category = Json.decodeFromString<Category>(categoryJson)
-                val viewModel: ProductViewModel = viewModel() // Inicializa el ViewModel
+                val viewModel: ProductViewModel = viewModel()
                 ProductsScreen(
                     category = category,
                     navController = navController,
@@ -113,16 +128,83 @@ fun App() {
             }
         }
 
+        composable(
+            "orderDetailScreen/{order}",
+            arguments = listOf(navArgument("order") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val orderJson = backStackEntry.arguments?.getString("order")
+            if (orderJson != null) {
+                val order = Json.decodeFromString<Order>(orderJson)
+                val viewModel: OrderViewModel = viewModel()
+                OrderDetailScreen(
+                    order = order,
+                    navController = navController,
+                    viewModel = viewModel
+                )
+            } else {
+                // Manejar el caso en que `categoryJson` sea nulo
+                Log.e("Navigation", "Category JSON is null")
+            }
+        }
+
+        composable(
+            "productsUserScreen/{category}",
+            arguments = listOf(navArgument("category") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val categoryJson = backStackEntry.arguments?.getString("category")
+            if (categoryJson != null) {
+                val category = Json.decodeFromString<Category>(categoryJson)
+                val viewModel: ProductViewModel = viewModel()
+                ProductsUserScreen(
+                    category = category,
+                    navController = navController,
+                    viewModel = viewModel
+                )
+            } else {
+                Log.e("Navigation", "Category JSON is null")
+            }
+        }
+
+        composable(
+            "productDetailUser/{product}",
+            arguments = listOf(navArgument("product") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val productJson = backStackEntry.arguments?.getString("product")
+            if (productJson != null) {
+                val product = Json.decodeFromString<Product>(productJson)
+                val viewModelO: OrderViewModel = viewModel()
+                val viewModelP: ProductViewModel = viewModel()
+                val viewModelU: ProfileViewModel = viewModel()
+                ProductDetailUserScreen(
+                    product = product,
+                    navController = navController,
+                    viewModelO = viewModelO,
+                    viewModelP =viewModelP ,
+                    viewModelU = viewModelU
+                )
+            } else {
+                Log.e("Navigation", "Product JSON is null")
+            }
+        }
+
         composable("addProducts/{categoryId}") { backStackEntry ->
             // Recupera el parámetro de la ruta
             val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
             AddProductScreen(navController, categoryId, productViewModel = viewModel(), sellerId = "")
         }
 
+        composable("productSeller/{sellerId}") { backStackEntry ->
+            val sellerId = backStackEntry.arguments?.getString("sellerId") ?: ""
+            ProductSellerScreen(navController, sellerId)
+        }
 
-
-
-
+        composable(
+            route = "productDetail/{productId}",
+            arguments = listOf(navArgument("productId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId") ?: ""
+            ProductDetailScreen(navController, productId)
+        }
 
 
     }
@@ -138,12 +220,28 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     )
 }
 
+@Preview(showBackground = true)
+@Composable
+fun OrdersUserPreview(){
+    OrdersUserScreen(navController = rememberNavController())
+}
+
+@Preview(showBackground = true)
+@Composable
+fun OrderSellerPreview(){
+    OrderSellerScreen(navController = rememberNavController())
+}
+
+
 
 @Preview(showBackground = true)
 @Composable
 fun SelectTypeUserPreview(){
     SelectTypeUserScreen(navController = rememberNavController())
 }
+
+
+
 
 
 @Preview(showBackground = true)
@@ -202,3 +300,5 @@ fun MenuUserPreview()  {
 fun MenuSellerPreview()  {
     MenuSellerScreen(navController = rememberNavController())
 }
+
+

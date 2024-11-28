@@ -72,9 +72,9 @@ import kotlinx.serialization.json.Json
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductsScreen(
-     category: Category
-     ,navController: NavController,
+fun ProductsUserScreen(
+    category: Category
+    ,navController: NavController,
     viewModel: ProductViewModel
 ) {
 
@@ -158,7 +158,7 @@ fun ProductsScreen(
                                 shape = CircleShape,
                                 color = (Color(0xFF556B2F)),
 
-                            ) {
+                                ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Text(
                                         text = "${product.discount}%",
@@ -208,23 +208,9 @@ fun ProductsScreen(
                 }
             }
 
-            item(span = { GridItemSpan(2) }) {
-
-                    Button(
-                        onClick = { navController.navigate("addProducts/${category.id}") },
-                        colors = ButtonDefaults.buttonColors(Color(0xFFE53935)),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                            .height(56.dp),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text(text = "Añadir Producto", color = Color.White)
-                    }
-                }
-            }
         }
     }
+}
 
 
 

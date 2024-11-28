@@ -11,6 +11,7 @@ interface AuthService {
 
     suspend fun createUser(email: String, password: String)
     suspend fun createSeller(email: String, password: String)
+    suspend fun deleteAccount(userId: String)
 
     suspend fun loginWithEmailAndPassword(email: String, password: String)
 }
@@ -36,5 +37,10 @@ class AuthServiceImpl: AuthService {
     override suspend fun loginWithEmailAndPassword(email: String, password: String) {
         // Iniciar sesión con correo y contraseña en Firebase Authentication
         auth.signInWithEmailAndPassword(email, password).await()
+    }
+
+    override suspend fun deleteAccount(userId: String) {
+        val user = FirebaseAuth.getInstance().currentUser
+        user?.delete()?.await() ?: throw Exception("Usuario no autenticado")
     }
 }

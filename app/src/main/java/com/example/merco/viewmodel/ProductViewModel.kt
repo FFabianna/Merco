@@ -10,9 +10,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.merco.domain.model.DTO.ProductDTO
 import com.example.merco.domain.model.Product
+import com.example.merco.domain.model.Seller
 import com.example.merco.repository.ProductRepository
 import com.example.merco.repository.ProductRepositoryImpl
 import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.util.concurrent.Service
+import com.google.firebase.firestore.FirebaseFirestore
 
 import kotlinx.coroutines.launch
 
@@ -21,8 +23,17 @@ class ProductViewModel(
 
 ) : ViewModel() {
 
+
+
     val authState = MutableLiveData(0)
     val errorMessage = MutableLiveData<String?>()
+    private val _loading = MutableLiveData<Boolean>()
+    val loading: LiveData<Boolean> = _loading
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> = _error
+    private val _product = MutableLiveData<Product?>()
+    val product: LiveData<Product?> = _product
+
 
 
     private val _products = MutableLiveData<List<Product>>()
@@ -36,6 +47,11 @@ class ProductViewModel(
         _sellerId.value = sellerId
     }
 
+    init {
+        fetchProducts(categoryId = "")
+    }
+
+
 
 
     fun uploadImageAndAddProduct(categoryId: String, productDTO: ProductDTO, imageUri: Uri) {
@@ -46,10 +62,12 @@ class ProductViewModel(
         viewModelScope.launch {
             try {
                 productRepository.addProduct(categoryId, updatedProduct,imageUri)
+
                 authState.value = 3 // Success
             } catch (e: Exception) {
                 authState.value = 2 // Error
             }
+
         }
     }
 
@@ -62,7 +80,53 @@ class ProductViewModel(
         }
     }
 
+    suspend fun fetchProductss(categoryId: String): List<Product> {
+        return try {
+            productRepository.getProductsByCategory(categoryId)
+        } catch (e: Exception) {
+            Log.e("ProductViewModel", "Error fetching products: ${e.message}")
+            emptyList() // Devuelve una lista vacía en caso de error
+        }
+    }
+/*
+    fun fetchProductsBySeller(sellerId: String)= viewModelScope.launch {
+        try{
+            val productsList = productRepository.getProductsBySeller(sellerId)
+            _products.postValue(productsList)
+        } catch (e: Exception) {
+            Log.e("ProductViewModel", "Error fetching products: ${e.message}")
+        }
+
+    }*/
+
+    fun fetchProductsBySeller(sellerId: String) = viewModelScope.launch {
+        try {
+            val products = productRepository.getProductsBySeller(sellerId)
+            _products.value = products
+        } catch (e: Exception) {
+            Log.e("ProductViewModel", "Error fetching products: ${e.message}")
+            _products.value = emptyList() // Manejo de errores
+        }
 
 
+    }
+
+    fun loadProductById(id: String) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val fetchedProduct = productRepository.getProductById(id)
+                if (fetchedProduct != null) {
+                    _product.value = fetchedProduct
+                } else {
+                    _error.value = "Producto no encontrado."
+                }
+            } catch (e: Exception) {
+                _error.value = "Error al cargar el producto: ${e.message}"
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
 
 }

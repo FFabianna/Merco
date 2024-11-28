@@ -36,7 +36,7 @@ fun SelectTypeUserScreen(navController: NavController) {
         // Botón de Comprador
         Button(
             onClick =  { navController.navigate("registerUser") },
-            colors = ButtonDefaults.buttonColors(Color(0xFFE53935)),
+            colors = ButtonDefaults.buttonColors(Color.Red),
             shape = RoundedCornerShape(50),
             modifier = Modifier
                 .fillMaxWidth()
@@ -50,7 +50,7 @@ fun SelectTypeUserScreen(navController: NavController) {
         // Botón de Vendedor
         Button(
             onClick = { navController.navigate("registerSeller") },
-            colors = ButtonDefaults.buttonColors(Color(0xFFE53935)),
+            colors = ButtonDefaults.buttonColors(Color.Red),
             shape = RoundedCornerShape(50),
             modifier = Modifier
                 .fillMaxWidth()

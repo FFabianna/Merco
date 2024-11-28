@@ -8,17 +8,24 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import com.example.merco.domain.model.Category
+import com.example.merco.domain.model.Product
 import com.example.merco.repository.AuthRepository
 import com.example.merco.repository.AuthRepositoryImpl
 import com.example.merco.repository.CategoryRepository
 import com.example.merco.repository.CategoryRepositoryImpl
 import com.google.firebase.auth.FirebaseAuthException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
 class CategoryViewModel(
-    private val categoryRepository: CategoryRepository = CategoryRepositoryImpl()
+    private val categoryRepository: CategoryRepository = CategoryRepositoryImpl(),
+
+    private val productViewModel: ProductViewModel= ProductViewModel()
+
 
 ) : ViewModel() {
 
@@ -27,6 +34,9 @@ class CategoryViewModel(
 
     private val _categories = MutableLiveData<List<Category>>()
     val categories: LiveData<List<Category>> get() = _categories
+
+    private val _categoriesWithProducts = MutableLiveData<List<Pair<Category, List<com.example.merco.domain.model.Product>>>>()
+    val categoriesWithProducts: LiveData<List<Pair<Category, List<com.example.merco.domain.model.Product>>>> = _categoriesWithProducts
 
     init {
         fetchCategories()
@@ -55,8 +65,29 @@ class CategoryViewModel(
         }
     }
 
+    fun fetchCategoriesAndProducts() {
+        viewModelScope.launch {
+            try {
+                val categories = categoryRepository.getAllCategories()
+                val categoriesWithProductsList = coroutineScope {
+                    categories.map { category ->
+                        async {
+                            val products = productViewModel.fetchProductss(category.id) // Ahora devuelve la lista
+                            category to products
+                        }
+                    }.awaitAll()
+                }
+                _categoriesWithProducts.postValue(categoriesWithProductsList)
+            } catch (e: Exception) {
+                Log.e("CategoryViewModel", "Error fetching categories and products: ${e.message}")
+            }
+        }
+    }
+
 
 }
+
+
 
 
 

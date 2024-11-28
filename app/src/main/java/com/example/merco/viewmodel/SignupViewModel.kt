@@ -23,7 +23,8 @@ class SignupViewModel(
 
     val authState = MutableLiveData(0)
     val errorMessage = MutableLiveData<String?>()
-    val userRole = MutableLiveData<String?>()// Para mostrar errores al usuario
+    val userRole = MutableLiveData<String?>()
+    val deleteAccountResult = MutableLiveData<Boolean>()
 
     //private var _authSate:MutableLiveData<AuthSate> = MutableLiveData(AuthState.Idle)
 //val authState: MutableLiveData()
@@ -93,6 +94,8 @@ class SignupViewModel(
     }
 
 
+
+
     fun signin(email: String, password: String) {
         // Validar correo electrónico antes de proceder
         if (!isValidEmail(email)) {
@@ -112,6 +115,14 @@ class SignupViewModel(
                     errorMessage.value = ex.message // Mostrar error
                 }
             }
+        }
+    }
+
+    fun deleteAccount(userId: String) {
+
+        viewModelScope.launch {
+            val result = repo.deleteUserAccount(userId)
+            deleteAccountResult.postValue(result) // Notificar resultado
         }
     }
 }

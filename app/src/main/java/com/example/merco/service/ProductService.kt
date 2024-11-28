@@ -2,10 +2,12 @@ package com.example.merco.service
 
 import android.net.Uri
 import android.util.Log
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.merco.domain.model.Category
 import com.example.merco.domain.model.DTO.CategoryDTO
 import com.example.merco.domain.model.DTO.ProductDTO
 import com.example.merco.domain.model.Product
+import com.example.merco.viewmodel.ProductViewModel
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -72,6 +74,7 @@ class ProductServicesImpl:ProductService {
             // Sube la imagen asociada
             addImageProduct(image, generatedId)
 
+
         } catch (e: Exception) {
             Log.e("ProductServicesImpl", "Error al crear el product: ${e.message}")
         }
@@ -92,16 +95,32 @@ class ProductServicesImpl:ProductService {
 
 
     override suspend fun getProductById(id: String): Product? {
-        Log.d("ProductServicesImpl", "getProductyById: $id")
+        Log.d("ProductServicesImpl", "getProductById: $id")
 
-        val product= Firebase.firestore
+        val categoriesSnapshot = Firebase.firestore
             .collection("categories")
-            .document(id)
             .get()
             .await()
-        val productObject = product.toObject(Product::class.java)
-        return productObject
+
+        for (category in categoriesSnapshot.documents) {
+            val productSnapshot = category.reference
+                .collection("products")
+                .document(id)
+                .get()
+                .await()
+
+            if (productSnapshot.exists()) {
+                Log.d("ProductServicesImpl", "Producto encontrado en categoría: ${category.id}")
+                return productSnapshot.toObject(Product::class.java)
+            }
+        }
+
+        Log.w("ProductServicesImpl", "Producto no encontrado con ID: $id")
+        return null
     }
+
+
+
 
 
     override suspend fun getProductByName(name: String): Product? {
@@ -110,7 +129,6 @@ class ProductServicesImpl:ProductService {
             .document(name)
             .get()
             .await()
-
         val productObject = product.toObject(Product::class.java)
         return productObject
     }

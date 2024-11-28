@@ -52,8 +52,16 @@ android {
 }
 
 dependencies {
+    implementation ("androidx.compose.material:material-icons-extended:1.6.0")
+    implementation ("androidx.compose.material:material:1.6.0" )
+    implementation ("androidx.navigation:navigation-compose:2.5.3")
 
-    implementation("io.coil-kt:coil-compose:2.2.2")
+
+
+    implementation ("androidx.compose.material3:material3:1.2.0")
+    implementation ("io.coil-kt:coil-compose:2.2.2")
+
+   // implementation("io.coil-kt:coil-compose:2.2.2")
     implementation( "androidx.navigation:navigation-compose:2.6.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 
@@ -88,6 +96,7 @@ dependencies {
     implementation(libs.firebase.storage)
     implementation(libs.firebase.crashlytics.buildtools)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.play.services.analytics.impl)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

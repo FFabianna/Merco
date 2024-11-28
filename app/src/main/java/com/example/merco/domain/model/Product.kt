@@ -1,5 +1,8 @@
 package com.example.merco.domain.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Product(
     val id: String="",
     val name: String="",
@@ -10,5 +13,8 @@ data class Product(
     val stock: Int = 0,
     val reason: String = "",
     val sellerId: String = "",
-    val imageId: String = ""
-)
+    val imageId: String = "",
+    //val storeName: String = ""
+) {
+
+}

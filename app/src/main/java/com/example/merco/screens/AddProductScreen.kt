@@ -24,7 +24,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -66,6 +65,8 @@ import com.example.merco.viewmodel.CategoryViewModel
 import com.example.merco.viewmodel.CategoryViewModelFactory
 import com.example.merco.viewmodel.ProductViewModel
 import com.example.merco.viewmodel.ProductViewModelFactory
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PhotoCamera
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -133,7 +134,7 @@ fun AddProductScreen(
                 .padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Campos de texto con estilo minimalista
+
             TextField(
                 value = name,
                 onValueChange = { name = it },
@@ -223,11 +224,12 @@ fun AddProductScreen(
                 }
             }
 
+
             TextField(
                 value = price.toString(),
                 onValueChange = { value ->
-                    price = value.toDoubleOrNull() ?: 0.0
-                    calculateNewPrice()
+
+                    price = value.replace(",", ".").toDoubleOrNull() ?: 0.0
                 },
                 placeholder = { Text("Precio por unidad") },
                 modifier = Modifier.fillMaxWidth(),
@@ -255,7 +257,6 @@ fun AddProductScreen(
                     focusedContainerColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.LightGray,
                     focusedIndicatorColor = Color.Gray
-
                 ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
             )
@@ -284,7 +285,7 @@ fun AddProductScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp)
-                    .background(Color(0xC4C4C4), RoundedCornerShape(8.dp))
+                    .background(Color.LightGray, RoundedCornerShape(8.dp))
                     .clickable { launcher.launch("image/*") },
                 contentAlignment = Alignment.Center
             ) {
@@ -296,15 +297,17 @@ fun AddProductScreen(
                         contentScale = ContentScale.Crop
                     )
                 } else {
-                    Text(
-                        text = "Foto",
-                        color = Color.White,
-                        modifier = Modifier
-                            .size(200.dp)  // Puedes ajustar el tamaño según sea necesario
-                            .fillMaxSize(),  // Para ocupar el espacio disponible
-                        style = MaterialTheme.typography.headlineSmall,  // Puedes cambiar el estilo del texto si es necesario
-                        textAlign = TextAlign.Center  // Centrar el texto en el espacio
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PhotoCamera,
+                            contentDescription = "Seleccionar imagen",
+                            modifier = Modifier.size(48.dp),
+                            tint = Color.Gray
+                        )
+                    }
                 }
             }
 
@@ -342,9 +345,8 @@ fun AddProductScreen(
                             productDTO,
                             selectedUri!!
                         )
-
-                        viewModel.fetchProducts(categoryId)
                         navController.popBackStack()
+
                     } else {
                         Toast.makeText(
                             context,
@@ -357,13 +359,12 @@ fun AddProductScreen(
                     .fillMaxWidth()
                     .height(48.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFDC3545) // Rojo similar al de la imagen
+                    containerColor = Color(0xFFDC3545)
                 ),
                 shape = RoundedCornerShape(24.dp)
             ) {
                 Text("Agregar")
             }
-
             Spacer(modifier = Modifier.height(20.dp))
         }
     }
@@ -371,6 +372,4 @@ fun AddProductScreen(
 
 fun returnBack(navController: NavController) {
     navController.popBackStack()
-
-
 }

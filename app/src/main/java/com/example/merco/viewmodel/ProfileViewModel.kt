@@ -50,6 +50,8 @@ class ProfileViewModel(
         }
     }
 
+
+
     fun funcion1() {
         viewModelScope.launch(Dispatchers.IO) {
            /* val chatRoomID = chatService.searchChatId(

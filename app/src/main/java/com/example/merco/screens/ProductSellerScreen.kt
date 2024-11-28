@@ -9,33 +9,24 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -54,17 +45,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.merco.domain.model.Category
-import com.example.merco.viewmodel.CategoryViewModel
+import com.example.merco.domain.model.Seller
 import com.example.merco.viewmodel.ProductViewModel
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -72,21 +60,25 @@ import kotlinx.serialization.json.Json
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductsScreen(
-     category: Category
-     ,navController: NavController,
-    viewModel: ProductViewModel
+fun ProductSellerScreen(
+    navController: NavController,
+    sellerId: String
+
 ) {
+    val viewModel: ProductViewModel = viewModel()
 
     val products by viewModel.products.observeAsState(emptyList())
 
-    LaunchedEffect(category) {
-        viewModel.fetchProducts(category.id)
+
+    LaunchedEffect(sellerId) {
+        viewModel.fetchProductsBySeller(sellerId)
     }
+
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Lista de productos") },
+                title = { Text("Productos de mi tienda") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
@@ -119,7 +111,7 @@ fun ProductsScreen(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = " ${category.name}",
+                        text = " ",
                         style = MaterialTheme.typography.headlineMedium,
                         color = Color.Black
                     )
@@ -134,12 +126,14 @@ fun ProductsScreen(
                         .aspectRatio(0.8f)
                         .background(Color.White)
                         .clickable {
+                            navController.navigate("productDetail/${product.id}")
                         },
+
                     shape = RoundedCornerShape(8.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                 ) {
                     Box(modifier = Modifier.fillMaxSize()) {
-
+                        // Imagen del producto
                         Image(
                             painter = rememberAsyncImagePainter(product.imageId),
                             contentDescription = "Imagen de ${product.name}",
@@ -158,7 +152,7 @@ fun ProductsScreen(
                                 shape = CircleShape,
                                 color = (Color(0xFF556B2F)),
 
-                            ) {
+                                ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Text(
                                         text = "${product.discount}%",
@@ -208,32 +202,8 @@ fun ProductsScreen(
                 }
             }
 
-            item(span = { GridItemSpan(2) }) {
 
-                    Button(
-                        onClick = { navController.navigate("addProducts/${category.id}") },
-                        colors = ButtonDefaults.buttonColors(Color(0xFFE53935)),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                            .height(56.dp),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text(text = "Añadir Producto", color = Color.White)
-                    }
-                }
-            }
         }
     }
-
-
-
-
-
-
-
-
-
-
-
+}
 

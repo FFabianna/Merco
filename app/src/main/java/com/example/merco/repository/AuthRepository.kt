@@ -19,6 +19,7 @@ interface AuthRepository {
     suspend fun signup(user:User, password:String)
     suspend fun signupseller(seller:Seller, password:String)
     suspend fun signin(email:String, password:String)
+    suspend fun deleteUserAccount(userId: String): Boolean
     //suspend fun addCategory(category:Category)
 
 
@@ -80,6 +81,16 @@ class AuthRepositoryImpl(
         categoryRepository.createCategory(category)
         Log.e("AuthRepositoryImpl", "Categoria registrada con éxito")
     }*/
+    override suspend fun deleteUserAccount(userId: String): Boolean {
+        return try {
+            authService.deleteAccount(userId) // Llamada al servicio
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
 
 
 
